@@ -6,10 +6,10 @@ authors = ["Trinove <trinove.tecnologia@trinove.com.br>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
-fastapi = "^0.115.3"
-uvicorn = "^0.32.0"
+python = "^3.12.7"
 sqlalchemy = "^2.0.36"
+fastapi = "^0.115.5"
+uvicorn = "^0.32.0"
 psycopg2 = "^2.9.10"
 
 
