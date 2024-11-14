@@ -3,7 +3,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 
 # Defina a URL do banco de dados
-DATABASE_URL = "postgresql://postgres:1234@10.5.10.10/db_ecommerce_murilo"  # Substitua com suas credenciais
+DATABASE_URL = "postgresql://postgres:1234@10.5.10.10/db_ecommerce_murilo" 
+# DATABASE_URL = "postgresql://postgres:1234@localhost/db_ecommerce" 
 
 # Base para todos os modelos
 Base = declarative_base()
