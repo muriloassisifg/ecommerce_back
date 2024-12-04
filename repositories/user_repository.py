@@ -10,15 +10,22 @@ class UserRepository:
             # Usa `joinedload` para carregar o relacionamento `Role` de forma eficiente
             return session.query(User).options(joinedload(User.role)).all()
 
-    def get_by_id(self, user_id: int):
+    def  get_by_id(self, user_id: int):
         with database.get_session() as session:
             return session.query(User).filter(User.id == user_id).first()
+        
+    
+    def get_by_username(self, username: int):
+        with database.get_session() as session:
+            return session.query(User).filter(User.username == username).first()
 
     def create(self, user_data: UserCreate):
         with database.get_session() as session:
             # Cria um novo User
             db_user = User(
                 name=user_data.name,
+                username=user_data.username,
+                password=user_data.password,
                 role_id=user_data.role_id  # Associa a role com o usuário
             )
             session.add(db_user)

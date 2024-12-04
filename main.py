@@ -10,7 +10,12 @@ from connection.database import Base, database
 
 import uvicorn
 
+from utils.jwt_middleware import JWTMiddleware
+from utils.openapi_schema import custom_openapi
+
 app = FastAPI()
+
+app.openapi = lambda: custom_openapi(app)
 
 app.include_router(product_router)  
 app.include_router(category_router)  
@@ -20,6 +25,8 @@ app.include_router(role_router)
 app.include_router(user_router)  
 
 Base.metadata.create_all(bind=database.engine)  # Criar tabelas no banco de dados
+
+app.add_middleware(JWTMiddleware)
 
 @app.get("/")
 
@@ -68,7 +75,7 @@ def startup():
             db.close()
 
 def main():
-    # startup()
+    startup()
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
 
 

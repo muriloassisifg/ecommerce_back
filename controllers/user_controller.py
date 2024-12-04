@@ -1,10 +1,15 @@
 # app/controllers/user_controller.py
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from services.user_service import UserService
-from models.user_model import UserResponse, UserCreate
+from models.user_model import UserLogin, UserResponse, UserCreate
 
 router = APIRouter()
 service = UserService()
+
+@router.post("/user/login", response_model=str)
+def login(user: UserLogin, req: Request):
+    dados_autenticacao = service.login(user=user, req=req)
+    return dados_autenticacao
 
 @router.get("/users", response_model=list[UserResponse])
 def get_all_users():
