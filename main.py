@@ -6,6 +6,7 @@ from controllers.subcategory_controller import router as subcategory_router
 from controllers.order_controller import router as order_router
 from controllers.role_controller import router as role_router
 from controllers.user_controller import router as user_router
+from controllers.cart_controller import router as cart_router
 from connection.database import Base, database
 
 import uvicorn
@@ -23,6 +24,8 @@ app.include_router(subcategory_router)
 app.include_router(order_router)  
 app.include_router(role_router)  
 app.include_router(user_router)  
+app.include_router(cart_router)  
+
 
 Base.metadata.create_all(bind=database.engine)  # Criar tabelas no banco de dados
 
@@ -75,7 +78,7 @@ def startup():
             db.close()
 
 def main():
-    startup()
+    # startup()
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
 
 

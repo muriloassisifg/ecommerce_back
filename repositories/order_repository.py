@@ -1,40 +1,66 @@
-# app/repositories/order_repository.py
-from models.order_model import Order
+from sqlalchemy.orm import joinedload
+from models.order_model import Order, OrderItem
+from models.cart_model import CartItem
 from connection.database import database
-from models.product_model import Product
 
 class OrderRepository:
-    
-    def get_all(self):
+    def create_order_from_cart(self, user_id: int):
         with database.get_session() as session:
-            return session.query(Order).all()
+            # Busca os itens do carrinho com informações de produtos
+            cart_items = (
+                session.query(CartItem)
+                .join(CartItem.cart)
+                .options(joinedload(CartItem.product))  # Carrega os produtos relacionados
+                .filter(CartItem.cart.has(user_id=user_id))  # Filtra pelo usuário do carrinho
+                .all()
+            )
 
-    def get_by_id(self, order_id: int):
-        with database.get_session() as session:
-            return session.query(Order).filter(Order.id == order_id).first()
+            if not cart_items:
+                raise Exception("Carrinho está vazio.")
 
-    def create(self, description: str, product_ids: list[int]):
-        with database.get_session() as session:
-            # Cria uma nova ordem
-            db_order = Order(description=description)
-            session.add(db_order)
+            # Cria o pedido
+            order = Order(user_id=user_id)
+            session.add(order)
             session.commit()
-            session.refresh(db_order)
 
-            # Associa os produtos à ordem
-            for product_id in product_ids:
-                product = session.query(Product).filter(Product.id == product_id).first()
-                if product:
-                    db_order.products.append(product)
+            # Adiciona os itens do carrinho ao pedido
+            for cart_item in cart_items:
+                order_item = OrderItem(
+                    order_id=order.id,
+                    product_id=cart_item.product_id,
+                    quantity=cart_item.quantity,
+                    price=cart_item.product.price,  # Preço atual do produto
+                )
+                session.add(order_item)
+
+            # Remove os itens do carrinho
+            session.query(CartItem).filter(CartItem.cart.has(user_id=user_id)).delete()
 
             session.commit()
-            return db_order
 
-    def delete(self, order_id: int):
+            # Recarrega o pedido com os itens relacionados
+            session.refresh(order)
+            return (
+                session.query(Order)
+                .options(joinedload(Order.items).joinedload(OrderItem.product))  # Carrega os itens e produtos relacionados
+                .filter(Order.id == order.id)
+                .first()
+            )
+
+    def get_orders_by_user(self, user_id: int):
         with database.get_session() as session:
-            order = session.query(Order).filter(Order.id == order_id).first()
-            if order:
-                session.delete(order)
-                session.commit()
-                return True
-            return False
+            return (
+                session.query(Order)
+                .options(joinedload(Order.items).joinedload(OrderItem.product))  # Carrega os itens e produtos relacionados
+                .filter(Order.user_id == user_id)
+                .all()
+            )
+
+    def get_order_by_id(self, order_id: int):
+        with database.get_session() as session:
+            return (
+                session.query(Order)
+                .options(joinedload(Order.items).joinedload(OrderItem.product))  # Carrega os itens e produtos relacionados
+                .filter(Order.id == order_id)
+                .first()
+            )
