@@ -7,7 +7,23 @@ class CartRepository:
     # Obter o carrinho do usuário
     def get_cart_by_user_id(self, user_id: int):
             with database.get_session() as session:
-                return session.query(Cart).options(joinedload(Cart.items).joinedload(CartItem.product)).filter(Cart.user_id == user_id).first()
+                # Busca o carrinho do usuário e carrega os itens com os produtos
+                cart = (
+                    session.query(Cart)
+                    .options(joinedload(Cart.items).joinedload(CartItem.product))
+                    .filter(Cart.user_id == user_id)
+                    .first()
+                )
+
+                if not cart:
+                    return None
+
+                # Preenche os itens do carrinho com informações do produto
+                for item in cart.items:
+                    item.product_name = item.product.name
+                    item.product_price = item.product.price
+
+                return cart
 
     # Criar um novo carrinho para o usuário
     def create_cart(self, user_id: int):

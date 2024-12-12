@@ -38,23 +38,32 @@ class OrderRepository:
 
             session.commit()
 
-            # Recarrega o pedido com os itens relacionados
+            # Recarrega o pedido com os itens relacionado
             session.refresh(order)
-            return (
-                session.query(Order)
-                .options(joinedload(Order.items).joinedload(OrderItem.product))  # Carrega os itens e produtos relacionados
-                .filter(Order.id == order.id)
-                .first()
-            )
+
+            order = session.query(Order).options(joinedload(Order.items).joinedload(OrderItem.product)).filter(Order.id == order.id).first()
+            for item in order.items:
+                item.product_name = item.product.name  # Atribui o nome do produto ao item
+
+            return order
 
     def get_orders_by_user(self, user_id: int):
         with database.get_session() as session:
-            return (
+            orders = (
                 session.query(Order)
-                .options(joinedload(Order.items).joinedload(OrderItem.product))  # Carrega os itens e produtos relacionados
+                .options(
+                    joinedload(Order.items).joinedload(OrderItem.product)  # Carrega os produtos relacionados
+                )
                 .filter(Order.user_id == user_id)
                 .all()
             )
+
+            # Adiciona o nome do produto manualmente aos itens do pedido
+            for order in orders:
+                for item in order.items:
+                    item.product_name = item.product.name  # Atribui o nome do produto ao item
+
+            return orders
 
     def get_order_by_id(self, order_id: int):
         with database.get_session() as session:

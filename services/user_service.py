@@ -24,6 +24,7 @@ class UserService:
         payload = {
             "username": user_db.username,
             "user_id": user_db.id,
+            "role_id": user_db.role_id
         }
 
         access_token = jwt.encode(payload, settings.jwt_key, settings.jwt_algorithm)

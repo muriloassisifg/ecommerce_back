@@ -35,7 +35,10 @@ class CartItemBase(BaseModel):
     quantity: int
 
 class CartItemResponse(BaseModel):
+    id: int
     product_id: int
+    product_name: str  # Nome do produto
+    product_price: float  # Preço do produto
     quantity: int
 
 
