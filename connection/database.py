@@ -4,7 +4,8 @@ from sqlalchemy.orm import sessionmaker, Session
 
 # Defina a URL do banco de dados
 # DATABASE_URL = "postgresql://postgres:1234@10.5.10.10/db_ecommerce_murilo" 
-DATABASE_URL = "postgresql://postgres:1234@localhost/db_ecommerce" 
+DATABASE_URL = "postgresql://postgres:12345678@ls-8b063c24d5f4cfbdf8baaaa9963d8e6884f45179.cvw82my2al6w.us-east-1.rds.amazonaws.com:5432/dbecommerce" 
+# DATABASE_URL = "postgresql://postgres:1234@localhost/db_ecommerce" 
 
 # Base para todos os modelos
 Base = declarative_base()

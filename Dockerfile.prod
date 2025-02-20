@@ -1,0 +1,31 @@
+# Use an official Python runtime as a parent image
+FROM python:3.11.6
+
+# Set the working directory in the container to /code
+WORKDIR /code
+
+# If you're using poetry and want to include it in the Docker image
+# Install poetry
+# Note: You might want to lock the Poetry version for consistency
+RUN pip install --upgrade pip && pip install poetry wkhtmltopdf
+
+# Instalar dependências necessárias para o wkhtmltopdf na etapa final
+RUN apt-get update && apt-get install -y \
+    wkhtmltopdf
+
+# Configurar o PATH para o wkhtmltopdf
+ENV PATH="/usr/local/bin:/usr/bin:/bin:$PATH"
+
+# Copy the current directory contents into the container at /code
+COPY . /code
+
+# Use poetry to install project dependencies
+# Ensure your pyproject.toml and poetry.lock* are copied correctly
+# Optionally, export the dependencies to requirements.txt format and install them using pip
+RUN poetry export -f requirements.txt --output requirements.txt --without-hashes
+RUN pip install -r requirements.txt
+
+# Make port 80 available to the world outside this container
+EXPOSE 80
+
+ENTRYPOINT ["python", "main.py"]

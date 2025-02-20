@@ -19,6 +19,7 @@ class JWTMiddleware(BaseHTTPMiddleware):
         "/user/save",
         "/user/login",
         "/bruky_engine/documentation",
+        "/health",
     ]
 
     async def dispatch(self, request: Request, call_next):
