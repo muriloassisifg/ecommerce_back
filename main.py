@@ -9,6 +9,7 @@ from controllers.user_controller import router as user_router
 from controllers.cart_controller import router as cart_router
 from controllers.health_controller import router as health_router
 from connection.database import Base, database
+from fastapi.middleware.cors import CORSMiddleware
 
 import uvicorn
 
@@ -32,6 +33,9 @@ app.include_router(health_router)
 Base.metadata.create_all(bind=database.engine)  # Criar tabelas no banco de dados
 
 app.add_middleware(JWTMiddleware)
+app.add_middleware(CORSMiddleware, allow_origins=[
+    "https://staging.d2x2jh41f4q4d3.amplifyapp.com"
+])
 
 @app.get("/")
 
