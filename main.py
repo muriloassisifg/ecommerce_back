@@ -35,7 +35,12 @@ Base.metadata.create_all(bind=database.engine)  # Criar tabelas no banco de dado
 app.add_middleware(JWTMiddleware)
 app.add_middleware(CORSMiddleware, allow_origins=[
     "https://staging.d2x2jh41f4q4d3.amplifyapp.com"
-])
+], allow_redentials=True,
+allow_methods=["*"],
+allow_headers=["*"]
+
+
+)
 
 @app.get("/")
 
